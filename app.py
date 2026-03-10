@@ -1,19 +1,22 @@
 import streamlit as st
+import pandas as pd
 import folium
-from streamlit.components.v1 import html
+from streamlit_folium import st_folium
 
-st.title("Yangon IoT Sensor Map (Test)")
+# Sample sensor data
+df = pd.DataFrame({
+    'name': ['Sensor 1', 'Sensor 2'],
+    'lat': [16.8471, 16.7904],
+    'lon': [96.1735, 96.1715]
+})
 
-# Yangon center
-center = [16.8409, 96.1735]
+# Yangon map
+m = folium.Map(location=[16.8409, 96.1735], zoom_start=12)
 
-# Create map
-m = folium.Map(location=center, zoom_start=13)
+for i, row in df.iterrows():
+    folium.Marker(
+        location=[row['lat'], row['lon']],
+        popup=row['name']
+    ).add_to(m)
 
-# Sensor nodes
-folium.Marker([16.8409, 96.1735], popup="Sensor Node 1").add_to(m)
-folium.Marker([16.8500, 96.1800], popup="Sensor Node 2").add_to(m)
-
-# Convert map to HTML and show in Streamlit
-map_html = m._repr_html_()
-html(map_html, height=500)
+st_folium(m, width=700, height=500)
